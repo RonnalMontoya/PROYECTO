@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Página de Inicio</h1>
-<p>Bienvenido a mi aplicación Flask</p>
+<div class="container text-center mt-5">
+    <h1 class="display-4">Bienvenido al Sistema de Inventario - Panadería Dulce Hogar 🥖🍞</h1>
+    <p class="lead">Administra tus productos de manera sencilla y eficiente.</p>
+    <hr>
+    <a href="{{ url_for('listar_productos') }}" class="btn btn-primary btn-lg">Ver Productos</a>
+    <a href="{{ url_for('agregar_producto') }}" class="btn btn-success btn-lg">Añadir Producto</a>
+</div>
 {% endblock %}
