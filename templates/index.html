@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="display-4">Bienvenido al Sistema de Inventario - Panadería Dulce Hogar 🥖🍞</h1>
-    <p class="lead">Administra tus productos de manera sencilla y eficiente.</p>
-    <hr>
-    <a href="{{ url_for('listar_productos') }}" class="btn btn-primary btn-lg">Ver Productos</a>
-    <a href="{{ url_for('agregar_producto') }}" class="btn btn-success btn-lg">Añadir Producto</a>
+<div class="text-center mt-5">
+    <h1 class="display-4 fw-bold">Bienvenido al Sistema de Inventario</h1>
+    <h2 class="text-muted">Panadería Dulce Hogar 🥖🍞</h2>
+    <p class="lead mt-3">Administra tus productos de manera sencilla, rápida y eficiente.</p>
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a href="{{ url_for('listar_todos') }}" class="btn btn-primary btn-lg">
+            📦 Ver Productos
+        </a>
+        <a href="{{ url_for('formulario') }}" class="btn btn-success btn-lg">
+            ➕ Añadir Producto
+        </a>
+    </div>
 </div>
 {% endblock %}

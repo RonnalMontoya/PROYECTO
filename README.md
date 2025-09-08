@@ -1,23 +1,22 @@
-# 🥖 Sistema de Gestión de Inventarios - Panadería Dulce Hogar
+# 🥖 Sistema de Inventario - Panadería Dulce Hogar
 
-Este proyecto es un **sistema de gestión de inventarios** desarrollado con **Python, Flask y SQLite**.  
-Está orientado al manejo eficiente de productos en una panadería, aplicando conceptos de **Programación Orientada a Objetos (POO)** y colecciones en Python.
+Este proyecto es un **sistema de gestión de inventarios** desarrollado en **Python con Flask**, que permite administrar los productos de una panadería.  
+El sistema implementa **persistencia múltiple** utilizando:
+
+- **Archivos locales**: TXT, JSON, CSV
+- **Base de datos relacional**: SQLite
+- **Interfaz web** con Flask y Bootstrap
 
 ---
 
-## 🚀 Características
+## 🚀 Funcionalidades
 
-- ✅ CRUD completo (Crear, Leer, Actualizar, Eliminar) de productos.
-- ✅ Interfaz web construida con **Flask** y **Bootstrap 5**.
-- ✅ Persistencia de datos en base de datos **SQLite**.
-- ✅ Uso de **POO** para estructurar las clases `Producto` e `Inventario`.
-- ✅ Colecciones de Python para búsquedas rápidas en memoria.
-- ✅ Menú de navegación con las secciones:
-  - Inicio
-  - Acerca de
-  - Productos
-  - Añadir producto
-  - Contacto
+✅ Añadir productos con nombre, cantidad y precio  
+✅ Listar productos en una tabla interactiva  
+✅ Editar y eliminar productos  
+✅ Guardar datos en TXT, JSON, CSV y SQLite simultáneamente  
+✅ Consultar datos desde las distintas fuentes  
+✅ Interfaz moderna con **Bootstrap 5**  
 
 ---
 
