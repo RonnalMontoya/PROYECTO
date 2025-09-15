@@ -1,23 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_sqlalchemy import SQLAlchemy
-import os
-import json
-import csv
+from conexion.conexion import app, db
+import os, json, csv
 
 # ===============================
 # Configuración de la aplicación
 # ===============================
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'inventario123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/inventario.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+app.config['DEBUG'] = True
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # ===============================
-# Modelo de datos (SQLite)
+# Modelo de datos en MySQL
 # ===============================
 class Producto(db.Model):
+    __tablename__ = "producto"   # importante: coincidir con la tabla en MySQL
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
@@ -27,7 +23,7 @@ class Producto(db.Model):
         return f"<Producto {self.nombre}>"
 
 # ===============================
-# Funciones de persistencia archivos
+# Funciones de persistencia en archivos
 # ===============================
 def guardar_en_txt(producto):
     ruta = "datos/datos.txt"
@@ -96,26 +92,34 @@ def index():
 
 @app.route("/formulario", methods=["GET", "POST"])
 def formulario():
-    if request.method == "POST":
-        nombre = request.form["nombre"]
-        cantidad = int(request.form["cantidad"])
-        precio = float(request.form["precio"])
+    try:
+        if request.method == "POST":
+            nombre = request.form["nombre"]
+            cantidad = int(request.form["cantidad"])
+            precio = float(request.form["precio"])
 
-        nuevo_producto = {"nombre": nombre, "cantidad": cantidad, "precio": precio}
+            nuevo_producto = {"nombre": nombre, "cantidad": cantidad, "precio": precio}
 
-        # Guardar en archivos
-        guardar_en_txt(nuevo_producto)
-        guardar_en_json(nuevo_producto)
-        guardar_en_csv(nuevo_producto)
+            # Guardar en archivos
+            guardar_en_txt(nuevo_producto)
+            guardar_en_json(nuevo_producto)
+            guardar_en_csv(nuevo_producto)
 
-        # Guardar en SQLite
-        producto_db = Producto(nombre=nombre, cantidad=cantidad, precio=precio)
-        db.session.add(producto_db)
-        db.session.commit()
+            # Guardar en MySQL
+            producto_db = Producto(nombre=nombre, cantidad=cantidad, precio=precio)
+            db.session.add(producto_db)
+            db.session.commit()
 
-        return redirect(url_for("listar_todos"))
+            return redirect(url_for("listar_todos"))
 
-    return render_template("formulario.html")
+        return render_template("formulario.html")
+
+    except Exception as e:
+        # Mostramos el error en consola y en navegador
+        import traceback
+        print("❌ ERROR EN /formulario:")
+        traceback.print_exc()
+        return jsonify({"error": str(e)})
 
 @app.route("/listar_todos")
 def listar_todos():
@@ -145,9 +149,22 @@ def api_csv():
     return jsonify(leer_de_csv())
 
 # ===============================
+# Ruta para probar conexión con MySQL
+# ===============================
+@app.route("/test_db")
+def test_db():
+    try:
+        result = db.session.execute("SELECT 1").scalar()
+        return jsonify({"conexion": "exitosa", "resultado": result})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# ===============================
 # Inicializar la BD
 # ===============================
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # crea tabla si no existe
+        db.create_all()  # crea tablas si no existen
     app.run(debug=True)
+
+
