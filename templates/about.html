@@ -1,24 +1,31 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container mt-5">
-    <h2>Acerca del Proyecto</h2>
-    <p>
-        Este sistema de gestión de inventarios ha sido desarrollado como un proyecto académico 
-        y práctico para la administración de productos en una panadería.  
-        Utiliza <b>Python, Flask y SQLite</b> para ofrecer un control eficiente de los ítems 
-        disponibles en el negocio.
+    <h1 class="mb-4">ℹ️ Acerca del Sistema</h1>
+    <p class="lead">
+        Este sistema de inventario fue desarrollado como parte del curso de <b>Desarrollo Web con Flask</b>.  
+        Su objetivo es demostrar cómo integrar una aplicación Flask con una base de datos MySQL, permitiendo 
+        realizar operaciones <i>CRUD</i> (Crear, Leer, Actualizar y Eliminar) sobre la tabla <b>producto</b>.
     </p>
 
-    <h4>Características principales:</h4>
+    <h3 class="mt-4">🛠 Funcionalidades principales:</h3>
     <ul>
-        <li>✅ Registro, actualización y eliminación de productos.</li>
-        <li>✅ Interfaz amigable con <b>Bootstrap</b>.</li>
-        <li>✅ Persistencia de datos en <b>SQLite</b>.</li>
-        <li>✅ Uso de <b>Programación Orientada a Objetos (POO)</b>.</li>
+        <li>✅ Listar todos los productos registrados</li>
+        <li>✅ Buscar productos por nombre</li>
+        <li>✅ Añadir un nuevo producto al inventario</li>
+        <li>✅ Editar la información de un producto existente</li>
+        <li>✅ Eliminar productos de la base de datos</li>
     </ul>
 
-    <h5>Autores:</h5>
-    <p>Desarrollado por <b>[Tu Nombre]</b> como parte del curso de desarrollo de software.</p>
+    <h3 class="mt-4">👨‍💻 Tecnologías utilizadas:</h3>
+    <ul>
+        <li>⚡ <b>Python 3</b> con el microframework <b>Flask</b></li>
+        <li>🗄 <b>MySQL</b> gestionado desde <b>phpMyAdmin</b></li>
+        <li>🎨 <b>HTML5, Bootstrap 5</b> para la interfaz</li>
+    </ul>
+
+    <div class="alert alert-info mt-4">
+        <b>Nota:</b> Este sistema es un prototipo académico y puede adaptarse a distintos escenarios reales de gestión de inventarios.
+    </div>
 </div>
 {% endblock %}

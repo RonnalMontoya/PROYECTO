@@ -98,5 +98,15 @@
         "nombre": "PAN ENROLLADO",
         "cantidad": 30,
         "precio": 1.5
+    },
+    {
+        "nombre": "PAN ENROLLADO",
+        "cantidad": 30,
+        "precio": 1.5
+    },
+    {
+        "nombre": "PAN ENROLLADO",
+        "cantidad": 30,
+        "precio": 1.5
     }
 ]

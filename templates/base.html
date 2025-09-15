@@ -2,59 +2,35 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Inventario - Panadería Dulce Hogar</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>{{ title or "Inventario" }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">🥖 Panadería Dulce Hogar</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}"><i class="fa fa-home"></i> Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('listar_todos') }}"><i class="fa fa-list"></i> Ver Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('formulario') }}"><i class="fa fa-plus-circle"></i> Añadir Producto</a>
-                    </li>
-                    <!-- API Links -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="apiDropdown" role="button" data-bs-toggle="dropdown">
-                            🌐 API
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ url_for('api_txt') }}">📄 Ver TXT</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('api_json') }}">🟢 Ver JSON</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('api_csv') }}">📑 Ver CSV</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <a class="navbar-brand" href="{{ url_for('index') }}">Inventario</a>
+            <div>
+                <a class="btn btn-outline-light me-2" href="{{ url_for('listar_productos') }}">Productos</a>
+                <a class="btn btn-outline-light" href="{{ url_for('crear_producto') }}">Nuevo Producto</a>
             </div>
         </div>
     </nav>
 
-    <!-- Contenido dinámico -->
-    <div class="container">
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2025 Panadería Dulce Hogar | Sistema de Inventario con Flask, SQLite y Persistencia en Archivos</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,25 +1,21 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# conexion/conexion.py
+import mysql.connector
 
-# ===============================
-# Configuración de la aplicación
-# ===============================
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'inventario123'
+# Función para abrir conexión
+def conexion():
+    try:
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",          # Usuario por defecto en XAMPP
+            password="",          # Si tu root no tiene clave, déjalo vacío
+            database="proyecto"   # Nombre de tu base en phpMyAdmin
+        )
+        return conn
+    except mysql.connector.Error as e:
+        print(f"Error al conectar a MySQL: {e}")
+        return None
 
-# Conexión a MySQL (ajusta user/pass según phpMyAdmin)
-# Si tu usuario tiene contraseña (ej. "1234"), sería:
-# "mysql+pymysql://root:1234@localhost/proyecto"
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@localhost/proyecto"
-
-# Evitar warnings innecesarios
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Depuración (mostrar errores claros)
-app.config['DEBUG'] = True
-app.config['PROPAGATE_EXCEPTIONS'] = True
-app.config['TRAP_HTTP_EXCEPTIONS'] = True
-app.config['TRAP_BAD_REQUEST_ERRORS'] = True
-
-# Inicializar SQLAlchemy
-db = SQLAlchemy(app)
+# Función para cerrar conexión
+def cerrar_conexion(conn):
+    if conn and conn.is_connected():
+        conn.close()
