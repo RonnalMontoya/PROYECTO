@@ -1,21 +1,7 @@
 from flask import render_template, request, redirect, url_for, jsonify
 from conexion.conexion import app, db
+from models import Producto
 import os, json, csv
-
-# ===============================
-# Modelo de datos en MySQL
-# ===============================
-class Producto(db.Model):
-    __tablename__ = "producto"   # nombre exacto de la tabla en MySQL
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    cantidad = db.Column(db.Integer, nullable=False)
-    precio = db.Column(db.Float, nullable=False)
-
-    def __repr__(self):
-        return f"<Producto {self.nombre}>"
-
 
 # ===============================
 # Funciones de persistencia en archivos
@@ -67,20 +53,15 @@ def guardar_en_csv(producto):
 def leer_de_csv():
     productos = []
     ruta = "datos/datos.csv"
-    if not os.path.exists(ruta):   # si no existe, retorna lista vacía
-        return productos
-
-    with open(ruta, "r") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            try:
+    if os.path.exists(ruta):
+        with open(ruta, "r") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
                 productos.append({
                     "nombre": row["nombre"],
                     "cantidad": int(row["cantidad"]),
                     "precio": float(row["precio"])
                 })
-            except Exception as e:
-                print("Error leyendo fila del CSV:", row, e)
     return productos
 
 # ===============================
@@ -90,7 +71,6 @@ def leer_de_csv():
 def index():
     return render_template("index.html")
 
-print(">>> Registrando ruta /formulario")
 @app.route("/formulario", methods=["GET", "POST"])
 def formulario():
     try:
@@ -117,26 +97,21 @@ def formulario():
 
     except Exception as e:
         import traceback
-        print("ERROR EN /formulario:")   # mensaje en consola
-        traceback.print_exc()               # imprime el detalle del error
+        print("ERROR EN /formulario:")
+        traceback.print_exc()
         return jsonify({"error": str(e)})
 
-print(">>> Registrando ruta /listar_todos")
 @app.route("/listar_todos")
 def listar_todos():
-    try:
-        productos_db = Producto.query.all()
-        productos_txt = leer_de_txt()
-        productos_json = leer_de_json()
-        productos_csv = leer_de_csv()
-        return render_template("resultado.html",
-                            productos_db=productos_db,
-                            productos_txt=productos_txt,
-                            productos_json=productos_json,
-                            productos_csv=productos_csv)
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
+    productos_db = Producto.query.all()
+    productos_txt = leer_de_txt()
+    productos_json = leer_de_json()
+    productos_csv = leer_de_csv()
+    return render_template("resultado.html",
+                           productos_db=productos_db,
+                           productos_txt=productos_txt,
+                           productos_json=productos_json,
+                           productos_csv=productos_csv)
 
 # ===============================
 # Rutas API
@@ -151,19 +126,11 @@ def api_json():
 
 @app.route("/api/csv")
 def api_csv():
-    try:
-        productos = leer_de_csv()
-        return jsonify(productos)
-    except Exception as e:
-        import traceback
-        print("ERROR EN /api/csv:")
-        traceback.print_exc()
-        return jsonify({"error": str(e)})
+    return jsonify(leer_de_csv())
 
 # ===============================
 # Ruta para probar conexión con MySQL
 # ===============================
-print(">>> Registrando ruta /test_db")
 @app.route("/test_db")
 def test_db():
     try:
@@ -172,18 +139,11 @@ def test_db():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-
 # ===============================
 # Inicializar la BD
 # ===============================
 if __name__ == "__main__":
-    try:
-        with app.app_context():
-            db.create_all()
-        app.run(debug=True)
-    except Exception as e:
-        import traceback
-        print("ERROR AL INICIAR APP:")
-        traceback.print_exc()
-
+    with app.app_context():
+        db.create_all()  # crea tablas si no existen
+    app.run(debug=True)
 
