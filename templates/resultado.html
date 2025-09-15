@@ -2,19 +2,19 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">📊 Resultados del Inventario</h1>
-    <p class="text-center">Aquí se muestran los productos guardados en diferentes formatos (TXT, JSON, CSV y SQLite).</p>
+    <h1 class="text-center">📋 Productos Registrados</h1>
+    <p class="text-center text-muted">Aquí puedes ver los productos guardados en MySQL, TXT, JSON y CSV.</p>
     <hr>
 
-    <!-- Productos desde SQLite -->
-    <h2 class="mt-4">🗄️ Productos (SQLite)</h2>
-    <table class="table table-bordered table-striped">
+    <!-- Productos en MySQL -->
+    <h3 class="mt-4">🗄️ Productos en MySQL</h3>
+    <table class="table table-striped table-bordered shadow-sm">
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Cantidad</th>
-                <th>Precio</th>
+                <th>Precio (USD)</th>
             </tr>
         </thead>
         <tbody>
@@ -25,18 +25,22 @@
                 <td>{{ p.cantidad }}</td>
                 <td>${{ "%.2f"|format(p.precio) }}</td>
             </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">No hay productos en MySQL</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Productos desde TXT -->
-    <h2 class="mt-4">📄 Productos (TXT)</h2>
-    <table class="table table-bordered table-hover">
-        <thead class="table-secondary">
+    <!-- Productos en TXT -->
+    <h3 class="mt-4">📄 Productos en TXT</h3>
+    <table class="table table-striped table-bordered shadow-sm">
+        <thead class="table-primary">
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
-                <th>Precio</th>
+                <th>Precio (USD)</th>
             </tr>
         </thead>
         <tbody>
@@ -46,18 +50,22 @@
                 <td>{{ p.cantidad }}</td>
                 <td>${{ "%.2f"|format(p.precio) }}</td>
             </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No hay productos en TXT</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Productos desde JSON -->
-    <h2 class="mt-4">🟢 Productos (JSON)</h2>
-    <table class="table table-bordered table-hover">
+    <!-- Productos en JSON -->
+    <h3 class="mt-4">🔗 Productos en JSON</h3>
+    <table class="table table-striped table-bordered shadow-sm">
         <thead class="table-success">
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
-                <th>Precio</th>
+                <th>Precio (USD)</th>
             </tr>
         </thead>
         <tbody>
@@ -67,18 +75,22 @@
                 <td>{{ p.cantidad }}</td>
                 <td>${{ "%.2f"|format(p.precio) }}</td>
             </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No hay productos en JSON</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Productos desde CSV -->
-    <h2 class="mt-4">📑 Productos (CSV)</h2>
-    <table class="table table-bordered table-hover">
-        <thead class="table-info">
+    <!-- Productos en CSV -->
+    <h3 class="mt-4">📊 Productos en CSV</h3>
+    <table class="table table-striped table-bordered shadow-sm">
+        <thead class="table-warning">
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
-                <th>Precio</th>
+                <th>Precio (USD)</th>
             </tr>
         </thead>
         <tbody>
@@ -88,8 +100,18 @@
                 <td>{{ p.cantidad }}</td>
                 <td>${{ "%.2f"|format(p.precio) }}</td>
             </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No hay productos en CSV</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Botón para volver -->
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{{ url_for('formulario') }}" class="btn btn-success me-2">➕ Añadir Producto</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">🏠 Volver al Inicio</a>
+    </div>
 </div>
 {% endblock %}
