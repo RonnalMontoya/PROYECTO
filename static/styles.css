@@ -1,23 +1,95 @@
+/* =======================
+   ESTILOS GENERALES
+======================= */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    background: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-nav {
-    margin-bottom: 20px;
+/* =======================
+   NAVBAR
+======================= */
+.navbar {
+    background: linear-gradient(90deg, #0d1b2a, #1b263b);
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
+.navbar-brand {
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+.navbar-brand i {
+    margin-right: 6px;
+    color: #ffc107;
 }
 
-th {
-    background-color: #f4f4f4;
+.navbar-nav .nav-link {
+    color: #ddd !important;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+    transform: scale(1.05);
+}
+
+/* Dropdown API */
+.dropdown-menu {
+    background: #1b263b;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 0;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background: #ffc107;
+    color: #000;
+    transform: translateX(5px);
+}
+
+/* =======================
+   BOTONES
+======================= */
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #004080);
+    transform: scale(1.05);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #1c7430);
+    border: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #1c7430, #145214);
+    transform: scale(1.05);
+}
+
+/* =======================
+   FOOTER
+======================= */
+footer {
+    background: linear-gradient(90deg, #0d1b2a, #1b263b);
+    color: #ccc;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+footer .fw-bold {
+    color: #ffc107;
 }
