@@ -108,5 +108,15 @@
         "nombre": "PAN ENROLLADO",
         "cantidad": 30,
         "precio": 1.5
+    },
+    {
+        "nombre": "PAN BRIOLLO",
+        "cantidad": 45,
+        "precio": 0.3
+    },
+    {
+        "nombre": "PAN DE DULCE",
+        "cantidad": 50,
+        "precio": 0.35
     }
 ]
