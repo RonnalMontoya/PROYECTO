@@ -25,12 +25,37 @@ El sistema implementa persistencia múltiple utilizando:
 
 El proyecto incluye el archivo **`database/proyecto.sql`**, que contiene la estructura y datos iniciales de la base de datos MySQL.
 
-### 🔧 Cómo importar la base de datos
+🔧 Cómo importar la base de datos
 
-1. Abre tu terminal y entra a MySQL:
-
+- Abre tu terminal y entra a MySQL:
    ```bash
    mysql -u root -p
+- Crea la base de datos:
+CREATE DATABASE proyecto;
+USE proyecto;
+
+- Importa el script:
+source database/proyecto.sql;
+✅ Esto creará las tablas y cargará los datos.
+
+🚀 Ejecución del Proyecto
+- Instalar dependencias:
+pip install -r requirements.txt
+- Ejecutar Flask:
+python app.py
+- Abrir en el navegador:
+http://127.0.0.1:5000
+
+👨‍💻 Tecnologías utilizadas
+•	Python 3
+•	Flask
+•	Flask-Login
+•	MySQL
+•	SQLAlchemy
+•	Bootstrap 5
+
+📌 Autor: Ronnal Montoya
+📅 Año: 2025
 
 
 
