@@ -1,4 +1,4 @@
-# 🥖 Sistema de Inventario - Panadería Dulce Hogar
+# 🥖 Sistema de Inventario - Panadería EL PANCITO CRIOLLO
 
 Este proyecto es un **sistema de gestión de inventarios** desarrollado en **Python con Flask**, que permite administrar los productos de una panadería.  
 El sistema implementa **persistencia múltiple** utilizando:
