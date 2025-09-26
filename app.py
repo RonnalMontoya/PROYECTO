@@ -1,13 +1,34 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from conexion.conexion import conexion, cerrar_conexion
-from forms import ProductoForm
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from conexion.conexion import db   # ✅ solo importamos db
+from forms import ProductoForm, LoginForm, RegisterForm
+from models import Usuario, Producto
 from datetime import datetime
 import os, csv, json
 
+# ======================================================
+# Inicializar Flask
+# ======================================================
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev-secret-key'
 
+# Configuración de la base de datos
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:@localhost/proyecto'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Inicializar extensiones
+db.init_app(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = "login"  # redirige si no estás logueado
+
+# ======================================================
+# Flask-Login: Cargar usuario
+# ======================================================
+@login_manager.user_loader
+def load_user(user_id):
+    return Usuario.query.get(int(user_id))
 
 # ======================================================
 # Inyectar fecha en templates
@@ -16,9 +37,8 @@ app.config['SECRET_KEY'] = 'dev-secret-key'
 def inject_now():
     return {'now': datetime.utcnow}
 
-
 # ======================================================
-# Funciones para persistencia en archivos
+# Persistencia en archivos
 # ======================================================
 def guardar_en_txt(producto):
     ruta = "datos/datos.txt"
@@ -34,7 +54,6 @@ def leer_de_txt():
                 nombre, cantidad, precio = linea.strip().split(",")
                 productos.append({"nombre": nombre, "cantidad": int(cantidad), "precio": float(precio)})
     return productos
-
 
 def guardar_en_json(producto):
     ruta = "datos/datos.json"
@@ -56,7 +75,6 @@ def leer_de_json():
             return json.load(f)
     return []
 
-
 def guardar_en_csv(producto):
     ruta = "datos/datos.csv"
     existe = os.path.exists(ruta)
@@ -73,7 +91,6 @@ def leer_de_csv():
         with open(ruta, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # Normalizar claves a minúsculas
                 row_normalizado = {k.lower(): v for k, v in row.items()}
                 try:
                     productos.append({
@@ -92,108 +109,96 @@ def leer_de_csv():
 def index():
     return render_template('index.html', title='Inicio')
 
+# ======================================================
+# Rutas de Autenticación
+# ======================================================
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Aquí va la lógica para autenticar usuario
+        flash("Inicio de sesión exitoso.", "success")
+        return redirect(url_for('index'))
+    return render_template('auth/login.html', title="Iniciar Sesión", form=form)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        # Aquí va la lógica para guardar usuario en la BD
+        flash("Usuario registrado correctamente.", "success")
+        return redirect(url_for('login'))
+    return render_template('auth/register.html', title="Registro", form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("Has cerrado sesión", "info")
+    return redirect(url_for('index'))
 
 # ======================================================
-# Listar productos
+# Rutas de Productos
 # ======================================================
 @app.route('/productos')
+@login_required
 def listar_productos():
     q = request.args.get('q', '').strip()
-    conn = conexion()
-    cur = conn.cursor(dictionary=True)
     if q:
-        cur.execute("SELECT id, nombre, cantidad, precio FROM producto WHERE nombre LIKE %s", (f"%{q}%",))
+        productos = Producto.query.filter(Producto.nombre.like(f"%{q}%")).all()
     else:
-        cur.execute("SELECT id, nombre, cantidad, precio FROM producto")
-    productos = cur.fetchall()
-    cerrar_conexion(conn)
+        productos = Producto.query.all()
     return render_template('products/list.html', title='Productos', productos=productos, q=q)
 
-
-# ======================================================
-# Crear producto
-# ======================================================
 @app.route('/productos/nuevo', methods=['GET', 'POST'])
+@login_required
 def crear_producto():
-    form = ProductoForm()
-    if form.validate_on_submit():
-        conn = conexion()
-        try:
-            cur = conn.cursor()
-            cur.execute(
-                "INSERT INTO producto (nombre, cantidad, precio) VALUES (%s, %s, %s)",
-                (form.nombre.data, form.cantidad.data, float(form.precio.data))
-            )
-            conn.commit()
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        cantidad = int(request.form['cantidad'])
+        precio = float(request.form['precio'])
 
-            # Guardar también en TXT, JSON y CSV
-            nuevo_producto = {
-                "nombre": form.nombre.data,
-                "cantidad": form.cantidad.data,
-                "precio": float(form.precio.data)
-            }
-            guardar_en_txt(nuevo_producto)
-            guardar_en_json(nuevo_producto)
-            guardar_en_csv(nuevo_producto)
+        nuevo = Producto(nombre=nombre, cantidad=cantidad, precio=precio)
+        db.session.add(nuevo)
+        db.session.commit()
 
-            flash("Producto agregado correctamente.", "success")
-            return redirect(url_for('listar_productos'))
-        except Exception as e:
-            conn.rollback()
-            flash(f"Error al guardar: {e}", "danger")
-        finally:
-            cerrar_conexion(conn)
-    return render_template('products/form.html', title='Nuevo producto', form=form, modo='crear')
+        guardar_en_txt({"nombre": nombre, "cantidad": cantidad, "precio": precio})
+        guardar_en_json({"nombre": nombre, "cantidad": cantidad, "precio": precio})
+        guardar_en_csv({"nombre": nombre, "cantidad": cantidad, "precio": precio})
 
+        flash("Producto agregado correctamente.", "success")
+        return redirect(url_for('listar_productos'))
 
-# ======================================================
-# Editar producto
-# ======================================================
+    return render_template('products/form.html', title='Nuevo producto', modo='crear')
+
 @app.route('/productos/<int:pid>/editar', methods=['GET', 'POST'])
+@login_required
 def editar_producto(pid):
-    conn = conexion()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM producto WHERE id = %s", (pid,))
-    prod = cursor.fetchone()
+    prod = Producto.query.get(pid)
     if not prod:
-        cerrar_conexion(conn)
         return "Producto no encontrado", 404
 
-    form = ProductoForm(data=prod)
-    if form.validate_on_submit():
-        try:
-            cursor.execute(
-                "UPDATE producto SET nombre=%s, cantidad=%s, precio=%s WHERE id=%s",
-                (form.nombre.data, form.cantidad.data, float(form.precio.data), pid)
-            )
-            conn.commit()
-            flash("Producto actualizado correctamente.", "success")
-            return redirect(url_for('listar_productos'))
-        except Exception as e:
-            conn.rollback()
-            flash(f"Error al actualizar: {e}", "danger")
-        finally:
-            cerrar_conexion(conn)
-    cerrar_conexion(conn)
-    return render_template('products/form.html', title="Editar producto", form=form, modo="editar", pid=pid)
+    if request.method == 'POST':
+        prod.nombre = request.form['nombre']
+        prod.cantidad = int(request.form['cantidad'])
+        prod.precio = float(request.form['precio'])
+        db.session.commit()
+        flash("Producto actualizado correctamente.", "success")
+        return redirect(url_for('listar_productos'))
 
+    return render_template('products/form.html', title="Editar producto", modo="editar", pid=pid, form=prod)
 
-# ======================================================
-# Eliminar producto
-# ======================================================
 @app.route('/productos/<int:pid>/eliminar', methods=['POST'])
+@login_required
 def eliminar_producto(pid):
-    conn = conexion()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM producto WHERE id = %s", (pid,))
-    if cursor.rowcount > 0:
-        conn.commit()
+    prod = Producto.query.get(pid)
+    if prod:
+        db.session.delete(prod)
+        db.session.commit()
         flash("Producto eliminado correctamente.", "success")
     else:
         flash("Producto no encontrado.", "warning")
-    cerrar_conexion(conn)
     return redirect(url_for('listar_productos'))
-
 
 # ======================================================
 # APIs para ver archivos
@@ -210,20 +215,22 @@ def api_json():
 def api_csv():
     return jsonify(leer_de_csv())
 
-# -----------------------------
+# ======================================================
 # Probar conexión con la base de datos
-# -----------------------------
+# ======================================================
 @app.route('/test_db')
 def test_db():
     try:
-        conn = conexion()
-        cur = conn.cursor()
-        cur.execute("SELECT 1")
-        result = cur.fetchone()
-        cerrar_conexion(conn)
-        return {"conexion": "exitosa", "resultado": result[0]}
+        result = db.session.execute("SELECT 1").scalar()
+        return {"conexion": "exitosa", "resultado": result}
     except Exception as e:
         return {"error": str(e)}
+
+# ======================================================
+# Inicializar BD
+# ======================================================
+with app.app_context():
+    db.create_all()
 
 # ======================================================
 if __name__ == '__main__':

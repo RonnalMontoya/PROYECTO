@@ -27,7 +27,7 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    
+
                     <!-- Menú API -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="apiDropdown" role="button"
@@ -41,6 +41,7 @@
                         </ul>
                     </li>
 
+                    <!-- Menú normal -->
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Inicio</a>
                     </li>
@@ -50,6 +51,31 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('crear_producto') }}"><i class="fas fa-plus-circle"></i> Añadir Producto</a>
                     </li>
+
+                    <!-- Autenticación con Flask-Login -->
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link disabled text-info">
+                                👤 {{ current_user.username }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus"></i> Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
